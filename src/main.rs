@@ -140,17 +140,19 @@ fn loop_test()
 }
 
 
-fn fn1(x:&mut i32, y: &mut i32) -> (i32, [i32;2])
-{
-    let tmp: i32 = *x;
-    *x = *y;
-    *y = tmp;
-
-    return (*x * *y, [*x, *y]);
-}
 
 fn fn_param_tests()
 {
+    
+    fn fn1(x:&mut i32, y: &mut i32) -> (i32, [i32;2])
+    {
+        let tmp: i32 = *x;
+        *x = *y;
+        *y = tmp;
+
+        return (*x * *y, [*x, *y]);
+    }
+
     let mut x = 5;
     let mut y = 2;
     println!("{} - {}", x, y);
@@ -159,22 +161,8 @@ fn fn_param_tests()
     println!("{} - {}", x, y);
 }
 
-fn main()
+fn str_tests()
 {
-    let run = false;
-    if run
-    {
-        hello_world_example();
-        var_tests();
-        array_tests();
-        tuple_test();
-        ptr_tests();
-        scrutnee_test();
-        match_test();
-        loop_test();
-        fn_param_tests();
-    }
-    
     let mut my_str = String::new();
 
     my_str = String::from("my new string");
@@ -190,13 +178,241 @@ fn main()
 
     println!("{}", str1 + &str2);
 
-    //need to borrow again because it has been used before
+    //objs need to borrow again because it has been used before
     let str1 = "concat".to_string();
     let str2 = " string".to_string();
-
-    let format_str = format!("{}{}", str1, str2);
+    let i = 10;
+    let format_str = format!("{} {}{}", i, str1, str2);
     println!("{}", format_str);
 
     println!("{}", &my_str[0..7]);
+
+    let another_string = String::from("aaa bbb ccc ddd");
+    another_string.chars().nth(0);
+    another_string.starts_with('c');
+    another_string.contains("b c");
+    another_string.ends_with('d');
+}
+
+fn vector_tests()
+{
+    
+    let mut my_vect:Vec<i32> = vec![];
+    my_vect.push(1);
+    my_vect.push(2);
+    my_vect.push(3);
+    println!("{:?}", my_vect);
+    let el = my_vect.get(1);
+    println!("{:?}", el);
+    
+    for my_el in &mut my_vect
+    {
+        *my_el = *my_el * 10;
+    }
+
+    println!("{:?} {:?}", my_vect, &my_vect[2..]);
+    
+    match my_vect.get(10)
+    {
+        Some(x) => 
+        {
+            println!("{}", x)  
+        }
+        None =>
+        {
+            println!("out of bounds");
+        }
+    }
+
+    while !my_vect.is_empty()
+    {
+        match my_vect.pop()
+        {
+            Some(x) => 
+            {
+                println!("popped {}", x)  
+            }
+            None =>
+            {
+                println!("out of bounds");
+            }
+        }
+    }
+
+    match my_vect.pop()
+    {
+        Some(x) => 
+        {
+            println!("popped {}", x)  
+        }
+        None =>
+        {
+            println!("out of bounds");
+        }
+    }
+}
+
+fn struct_tests()
+{
+    #[derive(Debug)]
+    struct MyStruct
+    {
+        my_int:i32,
+        my_str:String,
+        my_opt_param:Option<String>,
+    }
+
+    impl MyStruct
+    {
+        fn to_string(&self) -> String
+        {
+            let opt_param = match &self.my_opt_param
+            {
+                Some(c)=> c.to_string(),
+                None => "".to_string()
+            };
+            return format!("my_int:{}\tmy_str:'{}'\tmy_opt_param:'{}'", self.my_int, self.my_str, opt_param);
+        }
+    }
+
+    let mut my_struct = MyStruct
+    {
+        my_int:11,
+        my_str:"MyBigString".to_string(),
+        my_opt_param:None
+    };
+
+    println!("{}", my_struct.to_string());
+    my_struct.my_opt_param = Some(String::from("new str on opt param"));
+    println!("{}", my_struct.to_string());
+    println!("{:?}", my_struct);
+
+    struct MyTupleStruct(i32,String);
+
+    impl MyTupleStruct
+    {
+        fn to_string(&self) -> String
+        {
+            return format!("0:{}\t1:{}", self.0, self.1);
+        }
+    }
+
+    let my_tuple_struct = MyTupleStruct(10,"MySuperTypleString".to_string());
+    println!("{}", my_tuple_struct.to_string());
+}
+
+fn enum_tests()
+{
+    #[derive(Debug)]
+    enum Direction
+    {
+        Up(String),Down(i32),Left(f32),Right(char)
+    }
+
+    impl Direction
+    {
+        fn get(&self) -> String
+        {
+            match self
+            {
+                Direction::Up(up) =>
+                {
+                    return up.to_string();
+                }
+                _ =>
+                {
+                    panic!("cant get string from {:?}", self);
+                }
+            }
+        }
+    }
+
+    let up = Direction::Up("Up String".to_string());
+    let down = Direction::Down(2);
+    let left = Direction::Left(3.0);
+    let right = Direction::Right('R');
+    println!("\"{}\":{:?} {:?} {:?} {:?}", up.get(), up, down, left, right);
+}
+
+fn option_results_tests()
+{
+    fn is_option(some_opt:Option<i32>) -> Result<i32, String>
+    {
+        if some_opt.is_some()
+        {
+            return Ok(some_opt.unwrap());
+        }
+        else
+        {
+            return Err("error".to_string());
+        }
+    }
+    
+    let mut my_opt_var = Some(123);
+    if my_opt_var.is_some()
+    {
+        println!("changing - {:?}", is_option(my_opt_var));
+        my_opt_var = None;
+    }
+
+    if my_opt_var.is_none()
+    {
+        println!("changed to none {:?}", is_option(my_opt_var));
+    }
+}
+fn main()
+{
+    let run = false;
+    if run
+    {
+        hello_world_example();
+        var_tests();
+        array_tests();
+        tuple_test();
+        ptr_tests();
+        scrutnee_test();
+        match_test();
+        loop_test();
+        fn_param_tests();
+        str_tests();
+        vector_tests();
+        enum_tests();
+        struct_tests();
+        option_results_tests();
+    }
+
+    struct Woman
+    {
+        name:String
+    }
+
+    struct Man
+    {
+        name:String
+    }
+
+    trait Person
+    {
+        fn get_name(&self) -> String;
+    }
+
+    impl Person for Woman
+    {
+        fn get_name(&self) -> String
+        {
+            return format!("Ms. {}", self.name.to_string());
+        }
+    }
+
+    impl Person for Man
+    {
+        fn get_name(&self) -> String
+        {
+            return format!("Mr. {}", self.name.to_string());
+        }
+    }
+
+    println!("{}",Man{name:"Ronaldo".to_string()}.get_name());
+    println!("{}",Woman{name:"Rosana".to_string()}.get_name());
 
 }
