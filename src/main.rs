@@ -360,6 +360,59 @@ fn option_results_tests()
         println!("changed to none {:?}", is_option(my_opt_var));
     }
 }
+
+fn trait_generic_module_tests()
+{
+    use module::Person;
+
+    mod module
+    {
+        pub struct Woman
+        {
+            pub name:String
+        }
+
+        pub struct Man
+        {
+            pub name:String
+        }
+
+        pub trait Person
+        {
+            fn get_name(&self) -> String;
+        }
+
+        impl Person for Woman
+        {
+            fn get_name(&self) -> String
+            {
+                return format!("Ms. {}", self.name.to_string());
+            }
+        }
+    
+        impl Person for Man
+        {
+            fn get_name(&self) -> String
+            {
+                return format!("Mr. {}", self.name.to_string());
+            }
+        }
+    }
+
+    fn show<T:module::Person>(p:T)
+    {
+        println!("From Generic: {}", p.get_name());
+    }
+
+    let man = module::Man{name:"Ronaldo".to_string()};
+    let woman = module::Woman{name:"Rosana".to_string()};
+    println!("{}",man.get_name());
+    println!("{}",woman.get_name());
+
+    show(man);
+    show(woman);
+}
+
 fn main()
 {
     let run = false;
@@ -380,39 +433,6 @@ fn main()
         struct_tests();
         option_results_tests();
     }
-
-    struct Woman
-    {
-        name:String
-    }
-
-    struct Man
-    {
-        name:String
-    }
-
-    trait Person
-    {
-        fn get_name(&self) -> String;
-    }
-
-    impl Person for Woman
-    {
-        fn get_name(&self) -> String
-        {
-            return format!("Ms. {}", self.name.to_string());
-        }
-    }
-
-    impl Person for Man
-    {
-        fn get_name(&self) -> String
-        {
-            return format!("Mr. {}", self.name.to_string());
-        }
-    }
-
-    println!("{}",Man{name:"Ronaldo".to_string()}.get_name());
-    println!("{}",Woman{name:"Rosana".to_string()}.get_name());
-
+    
+    trait_generic_module_tests();
 }
