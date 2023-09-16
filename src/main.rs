@@ -94,6 +94,7 @@ pub mod chapter {
     }
 }
 
+
 fn main()
 {
     let run = false;
@@ -116,4 +117,6 @@ fn main()
         trait_generic_module_tests();
         training_functions::fn_param_tests();
     }
+    
+    println!("{}", unsafe { training_functions::cpp_bind::add(10,30) });
 }

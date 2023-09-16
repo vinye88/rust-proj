@@ -1,5 +1,5 @@
-use ferris_says::say; // from the previous step
-use std::{io::{stdout, BufWriter}, panic::catch_unwind};
+use ferris_says::say;
+use std::io::{stdout, BufWriter};
 
 pub fn hello_world_example()
 {
@@ -441,5 +441,16 @@ pub fn option_results_tests()
     if my_opt_var.is_none()
     {
         println!("changed to none {:?}", is_option(my_opt_var));
+    }
+}
+
+pub mod cpp_bind
+{
+    use std::os::raw::*;
+    extern "C" {
+        pub fn add(
+            a: c_int,
+            b: c_int
+        ) -> c_int;
     }
 }
